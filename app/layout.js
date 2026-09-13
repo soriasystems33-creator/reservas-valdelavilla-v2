@@ -1,10 +1,10 @@
 import { Montserrat } from 'next/font/google';
 import './globals.css';
 
-const Montserrat = Montserrat({
+const montserratFont = Montserrat({
   subsets: ['latin'],
   weight: ['200','300','400','500','600','700'],
-  variable: '--font-Montserrat',
+  variable: '--font-montserrat',
 });
 
 export const metadata = {
@@ -16,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
-      <body className={`${Montserrat.variable} font-sans bg-[#f8fafc] text-[#1e293b] antialiased`}>
+      <body className={`${nunito.variable} font-sans bg-[#f8fafc] text-[#1e293b] antialiased`}>
         {children}
       </body>
     </html>
