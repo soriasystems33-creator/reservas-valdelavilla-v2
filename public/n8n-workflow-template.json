@@ -1,0 +1,279 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "id": "aa4b92a4-ae75-4838-b432-27b33255d530",
+      "name": "Cada día a las 19:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -1168,
+        6896
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, client_name AS name, date, time, pax, adults, children, phone, email, status FROM appointments;"
+      },
+      "id": "c82a08b0-d0f9-4e72-8460-beaacfdff080",
+      "name": "Supabase - Obtener Reservas (Recordatorio)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        -944,
+        6896
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "AQUÍ_TU_CREDENCIAL_POSTGRES",
+          "name": "Supabase DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[\"date\"] }}",
+              "value2": "={{ $now.plus({days: 1}).toISODate() }}"
+            },
+            {
+              "value1": "={{ $json[\"status\"] }}",
+              "operation": "notEqual",
+              "value2": "cancelled"
+            }
+          ]
+        }
+      },
+      "id": "4a95d0a4-aff1-487b-9e46-c7dc29bb0adc",
+      "name": "Filtrar: Mañana",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        6896
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "🍽️ Recordatorio de Reserva para Mañana",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡Mañana te esperamos, {{ $json.name }}!</h2>\n    <p>Te recordamos los detalles de tu mesa reservada para mañana:</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.pax }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar Reserva</a>\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Para garantizar el mejor servicio, te rogamos que en caso de no poder asistir nos avises con la mayor antelación posible. La mesa se guardará durante 15 minutos de cortesía tras la hora confirmada.<br><br>\n      📞 <strong>Teléfono de contacto:</strong> [Tu Teléfono]<br>\n      📍 <strong>Dirección:</strong> [Tu Dirección]\n    </div>\n  </div>\n  <div style=\"background-color: #0f172a; padding: 20px; text-align: center; font-size: 11px; color: #94a3b8;\">\n    GastroManager · Gestión inteligente de reservas\n  </div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "69fbd04b-420c-44a4-bb76-9995bf58b412",
+      "name": "Email - Recordatorio Mañana",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -496,
+        6896
+      ],
+      "webhookId": "f71abb60-171a-44e4-a591-a15ffaaa27bf",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL RESTAURANTE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reserva-restaurante",
+        "options": {}
+      },
+      "id": "ac5d0cdf-8674-4e7b-8386-46346fe13c9f",
+      "name": "Webhook - Nueva Reserva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -1152,
+        7216
+      ],
+      "webhookId": "restaurante-reserva-webhook-001"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "✅ Reserva confirmada",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡Reserva confirmada, {{ $json.body.clientName }}!</h2>\n    <p>Estamos encantados de recibirte pronto en nuestra mesa.</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.date }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : $json.body.pax + ' personas' }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.body.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar Reserva</a>\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.body.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Las reservas se mantendrán durante un máximo de 15 minutos de cortesía tras la hora confirmada. Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "1a981aa9-a3d2-432e-880b-64bb823f9f13",
+      "name": "Email - Confirmación Inmediata",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -480,
+        7152
+      ],
+      "webhookId": "2c1441d9-e8f7-4c67-87dc-98e651dfc0a6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL RESTAURANTE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.event }}",
+              "value2": "cancellation"
+            }
+          ]
+        }
+      },
+      "id": "8c0f5e46-a60a-4a33-9a23-6e4ca83249d8",
+      "name": "Es cancelación?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        7392
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email || $json.email }}",
+        "subject": "❌ Reserva cancelada",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">Reserva cancelada, {{ $json.body.clientName || $json.clientName }}</h2>\n    <p>Hemos procesado la cancelación de tu reserva. Aquí están los detalles de la mesa liberada:</p>\n    <div style=\"background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.date || $json.date }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time || $json.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : ($json.body.pax || $json.pax) + ' personas' }}</p>\n    </div>\n    <p>Si deseas hacer una nueva reserva, puedes hacerlo a través de nuestra web.</p>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 15px;\">Nueva Reserva</a>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "b59f6494-6066-4212-9fce-5de06e348731",
+      "name": "Email - Cancelación",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        7472
+      ],
+      "webhookId": "9a2f43c8-dcc3-4a2a-9236-0f31cc36a073",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL RESTAURANTE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.event }}",
+              "value2": "new"
+            }
+          ]
+        }
+      },
+      "id": "58c65109-ebb0-415e-b8ea-ab77070b406e",
+      "name": "Nueva vs mod/cancel",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -720,
+        7232
+      ]
+    }
+  ],
+  "connections": {
+    "Cada día a las 19:00": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Obtener Reservas (Recordatorio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Obtener Reservas (Recordatorio)": {
+      "main": [
+        [
+          {
+            "node": "Filtrar: Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar: Mañana": {
+      "main": [
+        [
+          {
+            "node": "Email - Recordatorio Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Nueva Reserva": {
+      "main": [
+        [
+          {
+            "node": "Nueva vs mod/cancel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es cancelación?": {
+      "main": [
+        [
+          {
+            "node": "Email - Cancelación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nueva vs mod/cancel": {
+      "main": [
+        [
+          {
+            "node": "Email - Confirmación Inmediata",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Es cancelación?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1f20af6484e867d032857a1d4b47feed5a47287b3ff16a2cb91c5cd653183432"
+  }
+}

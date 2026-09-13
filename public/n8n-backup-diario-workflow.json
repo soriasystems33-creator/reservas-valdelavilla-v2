@@ -1,0 +1,207 @@
+{
+  "name": "Copia de Seguridad Diaria Completa (10:00 AM) - Gastromanager",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 10,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "schedule-trigger-10am",
+      "name": "Todos los días a las 10:00 AM",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, TO_CHAR(date::date, 'DD/MM/YYYY') AS fecha_es, time AS hora, CASE WHEN time < '17:00' THEN '☀️ COMIDA' ELSE '🌙 CENA' END AS turno, COALESCE(client_name, 'Sin nombre') AS cliente, pax AS personas, UPPER(LEFT(COALESCE(zone, 'interior'), 1)) || LOWER(SUBSTRING(COALESCE(zone, 'interior') FROM 2)) AS zona, COALESCE(phone, '-') AS telefono, COALESCE(notes, '-') AS notas_alergias, CASE WHEN status = 'confirmed' THEN 'Confirmada' WHEN status = 'seated' THEN 'En mesa' WHEN status = 'finished' THEN 'Finalizada' ELSE 'Otra' END AS estado_es FROM appointments WHERE status != 'cancelled' ORDER BY date DESC, time ASC;"
+      },
+      "id": "db-read-reservations",
+      "name": "1. Leer Reservas (Para Google Sheets)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        200
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "AQUÍ_TU_CREDENCIAL_SUPABASE_O_POSTGRES",
+          "name": "Supabase DB"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT json_build_object(\n  'version', 1,\n  'timestamp', now(),\n  'app', 'GASTROMANAGER BACKUP TOTAL N8N',\n  'appointments', (SELECT COALESCE(jsonb_agg(to_jsonb(a)), '[]'::jsonb) FROM appointments a),\n  'settings', (SELECT COALESCE(data::jsonb, '{}'::jsonb) FROM settings WHERE id = 'main' LIMIT 1),\n  'tables', (SELECT COALESCE(jsonb_agg(to_jsonb(t)), '[]'::jsonb) FROM tables t),\n  'providers', (SELECT COALESCE(jsonb_agg(to_jsonb(p)), '[]'::jsonb) FROM providers p)\n) AS backup_json;"
+      },
+      "id": "db-read-full-backup",
+      "name": "2. Leer Base de Datos Completa (Turnos, Mesas, Reservas)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        480,
+        420
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "AQUÍ_TU_CREDENCIAL_SUPABASE_O_POSTGRES",
+          "name": "Supabase DB"
+        }
+      },
+      "notesInFlow": true,
+      "notes": "Extrae de golpe reservas, turnos (settings), mesas y proveedores en un único JSON."
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "AQUÍ_TU_ID_DE_GOOGLE_SHEET",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Reservas",
+          "mode": "name"
+        },
+        "columnToMatchOn": "id",
+        "fieldsUi": {
+          "fieldValues": [
+            { "fieldId": "id", "fieldValue": "={{ $json.id }}" },
+            { "fieldId": "Fecha", "fieldValue": "={{ $json.fecha_es }}" },
+            { "fieldId": "Hora", "fieldValue": "={{ $json.hora }}" },
+            { "fieldId": "Turno", "fieldValue": "={{ $json.turno }}" },
+            { "fieldId": "Cliente", "fieldValue": "={{ $json.cliente }}" },
+            { "fieldId": "Personas", "fieldValue": "={{ $json.personas }}" },
+            { "fieldId": "Zona", "fieldValue": "={{ $json.zona }}" },
+            { "fieldId": "Teléfono", "fieldValue": "={{ $json.telefono }}" },
+            { "fieldId": "Notas / Alergias", "fieldValue": "={{ $json.notas_alergias }}" },
+            { "fieldId": "Estado", "fieldValue": "={{ $json.estado_es }}" }
+          ]
+        },
+        "options": {}
+      },
+      "id": "google-sheets-backup",
+      "name": "Sincronizar en Google Sheets (Excel móvil)",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.2,
+      "position": [
+        740,
+        200
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "AQUÍ_CREDENCIAL_GOOGLE_SHEETS",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const now = new Date();\nconst formatter = new Intl.DateTimeFormat('es-ES', {\n  timeZone: 'Europe/Madrid',\n  year: 'numeric', month: '2-digit', day: '2-digit',\n  hour: '2-digit', minute: '2-digit', second: '2-digit',\n  hour12: false\n});\nconst parts = formatter.formatToParts(now);\nconst getPart = (type) => parts.find(p => p.type === type)?.value || '00';\n\nconst dateStr = `${getPart('year')}-${getPart('month')}-${getPart('day')}`;\nconst timeStr = `${getPart('hour')}h${getPart('minute')}m${getPart('second')}s`;\n\n// Obtenemos el paquete JSON completo (reservas, turnos/settings, mesas, proveedores)\nconst backupData = $input.item.json.backup_json || $input.item.json;\n\nconst jsonString = JSON.stringify(backupData, null, 2);\nconst fileName = `copia_seguridad_total_${dateStr}_${timeStr}.json`;\n\nreturn [\n  {\n    json: {\n      fileName: fileName,\n      appointmentsCount: (backupData.appointments || []).length,\n      hasSettings: !!backupData.settings,\n      localTimeMadrid: `${dateStr} ${getPart('hour')}:${getPart('minute')}:${getPart('second')}`\n    },\n    binary: {\n      data: {\n        data: Buffer.from(jsonString).toString('base64'),\n        mimeType: 'application/json',\n        fileName: fileName\n      }\n    }\n  }\n];"
+      },
+      "id": "generate-json-file",
+      "name": "Generar Archivo de Respaldo TOTAL (.json)",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        740,
+        420
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "oAuth2",
+        "operation": "upload",
+        "fileContent": "data",
+        "name": "={{ $json.fileName }}",
+        "parents": [
+          "AQUÍ_ID_CARPETA_DRIVE_BACKUPS"
+        ],
+        "options": {}
+      },
+      "id": "google-drive-upload",
+      "name": "Guardar archivo JSON TOTAL en Google Drive",
+      "type": "n8n-nodes-base.googleDrive",
+      "typeVersion": 3,
+      "position": [
+        980,
+        420
+      ],
+      "credentials": {
+        "googleDriveOAuth2Api": {
+          "id": "AQUÍ_CREDENCIAL_GOOGLE_DRIVE",
+          "name": "Google Drive account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Todos los días a las 10:00 AM": {
+      "main": [
+        [
+          {
+            "node": "1. Leer Reservas (Para Google Sheets)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "2. Leer Base de Datos Completa (Turnos, Mesas, Reservas)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "1. Leer Reservas (Para Google Sheets)": {
+      "main": [
+        [
+          {
+            "node": "Sincronizar en Google Sheets (Excel móvil)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "2. Leer Base de Datos Completa (Turnos, Mesas, Reservas)": {
+      "main": [
+        [
+          {
+            "node": "Generar Archivo de Respaldo TOTAL (.json)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generar Archivo de Respaldo TOTAL (.json)": {
+      "main": [
+        [
+          {
+            "node": "Guardar archivo JSON TOTAL en Google Drive",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}

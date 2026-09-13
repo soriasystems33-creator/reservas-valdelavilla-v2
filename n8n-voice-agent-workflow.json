@@ -1,0 +1,1092 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-guardar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "fb54beb7-efdd-4c35-90b3-b77448f23f57",
+      "name": "Webhook: guardar_reserva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        11440,
+        19344
+      ],
+      "webhookId": "028602c9-e76a-414e-b289-a4e9d43d4758"
+    },
+    {
+      "parameters": {
+        "jsCode": "let body = $input.item.json.body || $input.item.json || {};\n\nif (typeof body === 'string') {\n  try {\n    body = JSON.parse(body);\n  } catch (e) {}\n}\n\nlet toolCallId = '';\nlet args = {};\n\nif (body.message && body.message.toolCalls) {\n  // Vapi format\n  const message = body.message;\n  const toolCall = (message.toolCalls && message.toolCalls[0]) || {};\n  const func = toolCall.function || {};\n  toolCallId = toolCall.id || '';\n  args = func['arguments'] || {};\n} else if (body.call || body.args) {\n  // Retell full format\n  toolCallId = body.call?.call_id || '';\n  args = body.args || {};\n} else {\n  // Retell flat format (args only / root keys)\n  toolCallId = '';\n  args = body || {};\n}\n\nif (typeof args === 'string') {\n  try {\n    args = JSON.parse(args);\n  } catch (e) {}\n}\n\n\nconst rawName = args.clientName || '';\nconst safeName = rawName.replace(/'/g, \"''\");\nconst rawEmail = args.email || '';\nconst safeEmail = rawEmail.replace(/'/g, \"''\");\n\nreturn {\n  json: {\n    toolCallId,\n    clientName: safeName,\n    date: args.date || '',\n    time: args.time || '',\n    pax: args.pax || 0,\n    zone: args.zone || 'interior',\n    phone: args.phone ? String(args.phone).replace(/\\D/g, '') : '',\n    email: safeEmail\n  }\n};"
+      },
+      "id": "9cc685f9-d814-4a9a-95d5-9c99a961e51c",
+      "name": "Parsear Guardar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11648,
+        19344
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://reservas-valdelavilla-v1.vercel.app/api/availability",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $json.date }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.time }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "412624d9-2a60-44c3-b88e-3394b65fa63e",
+      "name": "Validar Turno API",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        11792,
+        19344
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.shifts.length }}",
+              "operation": "larger"
+            }
+          ]
+        }
+      },
+      "id": "eebe81fd-02e8-4c73-b226-ea1e0714c9f4",
+      "name": "Es turno válido?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        11952,
+        19344
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Parsear Guardar\"].json.toolCallId ? { results: [ { toolCallId: $node[\"Parsear Guardar\"].json.toolCallId, result: \"Error: El turno solicitado (\" + $node[\"Parsear Guardar\"].json.time + \") no existe o no tiene plazas libres. Por favor, comprueba los turnos con comprobar_disponibilidad y pide al cliente otra hora.\" } ] } : { response: \"Error: Turno inválido.\" } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "450fd7ce-4681-4da4-999f-35013e7b5143",
+      "name": "Respuesta: Turno Invalido",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12144,
+        19440
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO appointments (client_name, name, date, time, pax, adults, children, zone, phone, email, source, status, meal) VALUES ('{{ $node[\"Parsear Guardar\"].json.clientName }}', '{{ $node[\"Parsear Guardar\"].json.clientName }}', '{{ $node[\"Parsear Guardar\"].json.date }}', '{{ $node[\"Parsear Guardar\"].json.time }}', {{ $node[\"Parsear Guardar\"].json.pax }}, {{ $node[\"Parsear Guardar\"].json.pax }}, 0, '{{ $node[\"Parsear Guardar\"].json.zone }}', '{{ $node[\"Parsear Guardar\"].json.phone }}', '{{ $node[\"Parsear Guardar\"].json.email }}', 'voice', 'confirmed', 'comida') RETURNING id;",
+        "options": {}
+      },
+      "id": "cdcbe232-2e77-4a05-a1e8-f8a07861d82e",
+      "name": "Insertar Reserva",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        12144,
+        19248
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "X4jIPRhuUzTpvRgO",
+          "name": "demo-restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Parsear Guardar\"].json.toolCallId ? { results: [ { toolCallId: $node[\"Parsear Guardar\"].json.toolCallId, result: \"Reserva guardada correctamente con el identificador \" + $json.id + \".\" } ] } : { response: \"Reserva guardada correctamente con el identificador \" + $json.id + \".\" } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "116adcdb-1031-420f-bf13-547e43e51509",
+      "name": "Respuesta: Guardada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12368,
+        19248
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-buscar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "3ac4dabb-5564-423e-a467-dee9e40fdcd9",
+      "name": "Webhook: buscar_reserva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        11456,
+        19616
+      ],
+      "webhookId": "413d4a88-36e9-479f-8348-3cbaa21e26f5"
+    },
+    {
+      "parameters": {
+        "jsCode": "let body = $input.item.json.body || $input.item.json || {};\n\nif (typeof body === 'string') {\n  try {\n    body = JSON.parse(body);\n  } catch (e) {}\n}\n\nlet toolCallId = '';\nlet args = {};\n\nif (body.message && body.message.toolCalls) {\n  // Vapi format\n  const message = body.message;\n  const toolCall = (message.toolCalls && message.toolCalls[0]) || {};\n  const func = toolCall.function || {};\n  toolCallId = toolCall.id || '';\n  args = func['arguments'] || {};\n} else if (body.call || body.args) {\n  // Retell full format\n  toolCallId = body.call?.call_id || '';\n  args = body.args || {};\n} else {\n  // Retell flat format (args only / root keys)\n  toolCallId = '';\n  args = body || {};\n}\n\nif (typeof args === 'string') {\n  try {\n    args = JSON.parse(args);\n  } catch (e) {}\n}\n\n\nconst clientNameInput = args.clientName || '';\nconst firstWord = clientNameInput.trim().split(/\\s+/)[0] || '';\nconst safeName = firstWord.replace(/'/g, \"''\");\n\nreturn {\n  json: {\n    toolCallId,\n    phone: args.phone ? String(args.phone).replace(/\\D/g, '') : '',\n    clientName: safeName\n  }\n};"
+      },
+      "id": "58784fa7-59dd-42af-9859-fe4ea5c9eb5f",
+      "name": "Parsear Buscar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11664,
+        19616
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, client_name AS name, TO_CHAR(date, 'YYYY-MM-DD') AS date, time, pax, zone FROM appointments WHERE phone = '{{ $json.phone }}' AND (LOWER(COALESCE(client_name, '')) LIKE '%' || LOWER('{{ $json.clientName }}') || '%' OR LOWER(COALESCE(name, '')) LIKE '%' || LOWER('{{ $json.clientName }}') || '%') AND status != 'cancelled' AND date >= CURRENT_DATE ORDER BY date ASC LIMIT 1;",
+        "options": {}
+      },
+      "id": "752e4941-8c01-46d1-85ee-4ac33fc18191",
+      "name": "Buscar Reserva",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        11856,
+        19616
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "X4jIPRhuUzTpvRgO",
+          "name": "demo-restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.id }}",
+              "operation": "isEmpty"
+            }
+          ]
+        }
+      },
+      "id": "654452d9-91bf-4a0b-8590-015d1296dc9b",
+      "name": "Existe reserva?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        12064,
+        19616
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Parsear Buscar\"].json.toolCallId ? { results: [ { toolCallId: $node[\"Parsear Buscar\"].json.toolCallId, result: \"No he encontrado ninguna reserva activa para ese número de teléfono.\" } ] } : { response: \"No he encontrado ninguna reserva activa para ese número de teléfono.\" } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "f1ad4f2f-3bf9-48a8-b4ff-c1f0c6ebbb82",
+      "name": "Respuesta: No Existe",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12256,
+        19680
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Parsear Buscar\"].json.toolCallId ? { results: [ { toolCallId: $node[\"Parsear Buscar\"].json.toolCallId, result: \"He encontrado una reserva a nombre de \" + $json.name + \" el día \" + $json.date + \" a las \" + $json.time + \" para \" + $json.pax + \" personas en la zona \" + $json.zone + \". El ID de reserva es \" + $json.id + \".\" } ] } : { response: \"He encontrado una reserva a nombre de \" + $json.name + \" el día \" + $json.date + \" a las \" + $json.time + \" para \" + $json.pax + \" personas en la zona \" + $json.zone + \". El ID de reserva es \" + $json.id + \".\" } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "940228c3-634c-4a38-ad72-54a2ea22fdde",
+      "name": "Respuesta: Encontrada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12256,
+        19568
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-cancelar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "1d2ab1d5-3d44-4baf-a0fe-52a15c1ed10f",
+      "name": "Webhook: cancelar_reserva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        11456,
+        19872
+      ],
+      "webhookId": "b9ae77a6-8133-4eee-b0b9-f46b77dfaf31"
+    },
+    {
+      "parameters": {
+        "jsCode": "let body = $input.item.json.body || $input.item.json || {};\n\nif (typeof body === 'string') {\n  try {\n    body = JSON.parse(body);\n  } catch (e) {}\n}\n\nlet toolCallId = '';\nlet args = {};\n\nif (body.message && body.message.toolCalls) {\n  // Vapi format\n  const message = body.message;\n  const toolCall = (message.toolCalls && message.toolCalls[0]) || {};\n  const func = toolCall.function || {};\n  toolCallId = toolCall.id || '';\n  args = func['arguments'] || {};\n} else if (body.call || body.args) {\n  // Retell full format\n  toolCallId = body.call?.call_id || '';\n  args = body.args || {};\n} else {\n  // Retell flat format (args only / root keys)\n  toolCallId = '';\n  args = body || {};\n}\n\nif (typeof args === 'string') {\n  try {\n    args = JSON.parse(args);\n  } catch (e) {}\n}\n\n\nconst rawId = args.id || '';\nconst safeId = rawId.replace(/'/g, \"''\");\n\nreturn {\n  json: {\n    toolCallId,\n    id: safeId\n  }\n};"
+      },
+      "id": "7f10565f-1cc6-4ed0-986c-615f08251442",
+      "name": "Parsear Cancelar",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11664,
+        19872
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE appointments SET status = 'cancelled' WHERE id = '{{ $json.id }}' RETURNING id;",
+        "options": {}
+      },
+      "id": "1de8e5ca-294e-49bf-8dd5-d06c6dd1fa01",
+      "name": "Cancelar en DB",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        11856,
+        19872
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "X4jIPRhuUzTpvRgO",
+          "name": "demo-restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Parsear Cancelar\"].json.toolCallId ? { results: [ { toolCallId: $node[\"Parsear Cancelar\"].json.toolCallId, result: \"La reserva con identificador \" + $json.id + \" ha sido cancelada correctamente.\" } ] } : { response: \"La reserva con identificador \" + $json.id + \" ha sido cancelada correctamente.\" } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "14ddedb4-53b7-484c-b71a-53e14c4f2333",
+      "name": "Respuesta: Cancelada",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12064,
+        19872
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "reserva-restaurante",
+        "options": {}
+      },
+      "id": "6194ee21-b814-4997-bb2b-acaf5ce5d3a6",
+      "name": "Webhook - Nueva Reserva",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        11520,
+        20128
+      ],
+      "webhookId": "restaurante-reserva-webhook-001"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "✅ Reserva confirmada",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡Reserva confirmada, {{ $json.body.clientName }}!</h2>\n    <p>Estamos encantados de recibirte pronto en nuestra mesa.</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.date }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : $json.body.pax + ' personas' }}</p>\n    </div>\n  </div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "83a712cd-0782-4f4c-bcce-3aec8c9155d9",
+      "name": "Email - Confirmación Inmediata",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        12064,
+        20080
+      ],
+      "webhookId": "0e221d01-f224-4453-b73e-1233c8a25d68",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL LA SERRERIA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.event }}",
+              "value2": "cancellation"
+            }
+          ]
+        }
+      },
+      "id": "1ba6cfbb-c730-4df8-a175-14d809c0e987",
+      "name": "Es cancelación?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        12064,
+        20224
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email || $json.email }}",
+        "subject": "❌ Reserva cancelada",
+        "message": "=<div>Reserva cancelada correctamente.</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "a25222fd-1027-4313-9371-3ba0e11d73b7",
+      "name": "Email - Cancelación",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        12256,
+        20224
+      ],
+      "webhookId": "c1aea15e-62c1-4002-8566-874db5e4d2ec",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL LA SERRERIA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json.body.event }}",
+              "value2": "new"
+            }
+          ]
+        }
+      },
+      "id": "e26431c9-648d-46d3-b558-8903860a9df8",
+      "name": "Nueva vs mod/cancel",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        11824,
+        20128
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 19
+            }
+          ]
+        }
+      },
+      "id": "b80c2e47-957a-4cef-87bc-5499bd349819",
+      "name": "Cada día a las 19:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        11456,
+        20480
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT id, client_name AS name, date, time, pax, adults, children, phone, email, status FROM appointments;",
+        "options": {}
+      },
+      "id": "27f15896-06df-4437-9f10-b2678870f067",
+      "name": "Supabase - Obtener Reservas (Recordatorio)",
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.2,
+      "position": [
+        11664,
+        20480
+      ],
+      "credentials": {
+        "postgres": {
+          "id": "X4jIPRhuUzTpvRgO",
+          "name": "demo-restaurantes"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{ $json[\"date\"] }}",
+              "value2": "={{ $now.plus({days: 1}).toISODate() }}"
+            },
+            {
+              "value1": "={{ $json[\"status\"] }}",
+              "operation": "notEqual",
+              "value2": "cancelled"
+            }
+          ]
+        }
+      },
+      "id": "54ef4791-ac62-4e6e-90e6-604eccfd2750",
+      "name": "Filtrar: Mañana",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        11856,
+        20480
+      ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.email }}",
+        "subject": "🍽️ Recordatorio de Reserva para Mañana",
+        "message": "=<div>¡Mañana te esperamos!</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "cd801fc7-44c5-471d-ad9e-cdcfccb6a7b3",
+      "name": "Email - Recordatorio Mañana",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        12064,
+        20480
+      ],
+      "webhookId": "276641cd-7b86-4a04-9ce0-68747f71b8e7",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL LA SERRERIA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.webpushr.com/v1/notification/send/all",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "webpushrKey",
+              "value": "30081b4b4fa42e283ee35961413090a7"
+            },
+            {
+              "name": "webpushrAuthToken",
+              "value": "122966"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { title: '¡Nueva Reserva de Voz! 🍽️', message: 'A nombre de ' + $node['Parsear Guardar'].json.clientName + ' para ' + $node['Parsear Guardar'].json.pax + ' personas el ' + $node['Parsear Guardar'].json.date + ' a las ' + $node['Parsear Guardar'].json.time + 'h.', target_url: 'https://reservas-valdelavilla-v1.vercel.app/admin.html', icon: 'https://reservas-valdelavilla-v1.vercel.app/logo.png' } }}",
+        "options": {}
+      },
+      "id": "cce74f79-b86b-4345-9310-f5f1cd12acf3",
+      "name": "Notificación Push (Voz)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        12544,
+        19248
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.webpushr.com/v1/notification/send/all",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "webpushrKey",
+              "value": "30081b4b4fa42e283ee35961413090a7"
+            },
+            {
+              "name": "webpushrAuthToken",
+              "value": "122966"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { title: '¡Reserva Cancelada (Voz)! ❌', message: 'Una reserva ha sido cancelada por el asistente de voz. ID: ' + $node['Parsear Cancelar'].json.id + '.', target_url: 'https://reservas-valdelavilla-v1.vercel.app/admin.html', icon: 'https://reservas-valdelavilla-v1.vercel.app/logo.png' } }}",
+        "options": {}
+      },
+      "id": "cf46baed-fa8e-4b81-ae0c-a15153f256ce",
+      "name": "Notificación Push Cancelación (Voz)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        12256,
+        19872
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "vapi-comprobar",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "id": "8353dc42-6974-4507-b2f8-dbbcb7199095",
+      "name": "Webhook: comprobar_disponibilidad2",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        11184,
+        20816
+      ],
+      "webhookId": "2ed36672-df41-42ac-9ac3-c9976eff2f5b"
+    },
+    {
+      "parameters": {
+        "jsCode": "let body = $input.item.json.body || $input.item.json || {};\n\nif (typeof body === 'string') {\n  try {\n    body = JSON.parse(body);\n  } catch (e) {}\n}\n\nlet toolCallId = '';\nlet args = {};\n\nif (body.message && body.message.toolCalls) {\n  // Vapi format\n  const message = body.message;\n  const toolCall = (message.toolCalls && message.toolCalls[0]) || {};\n  const func = toolCall.function || {};\n  toolCallId = toolCall.id || '';\n  args = func['arguments'] || {};\n} else if (body.call || body.args) {\n  // Retell full format\n  toolCallId = body.call?.call_id || '';\n  args = body.args || {};\n} else {\n  // Retell flat format (args only / root keys)\n  toolCallId = '';\n  args = body || {};\n}\n\nif (typeof args === 'string') {\n  try {\n    args = JSON.parse(args);\n  } catch (e) {}\n}\n\n\nreturn {\n  json: {\n    toolCallId,\n    date: args.date || '',\n    time: args.time || '',\n    pax: args.pax || 0\n  }\n};"
+      },
+      "id": "d2c5ffc8-5e5a-4daf-ace2-e300debecfc3",
+      "name": "Parsear Comprobar2",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        11504,
+        20816
+      ]
+    },
+    {
+      "parameters": {
+        "url": "https://reservas-valdelavilla-v1.vercel.app/api/availability",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "date",
+              "value": "={{ $json.date }}"
+            },
+            {
+              "name": "time",
+              "value": "={{ $json.time }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "bbd439f7-724d-4344-b660-f9f154ca1a85",
+      "name": "Comprobar Ocupación API2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [
+        11712,
+        20816
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.exactMatch }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "id": "fae82224-25bc-4bc1-a8ed-3602b244617d",
+      "name": "Es turno exacto?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        11984,
+        20816
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "number": [
+            {
+              "value1": "={{ $json.availability[$node[\"Parsear Comprobar2\"].json.time] ? $json.availability[$node[\"Parsear Comprobar2\"].json.time].totalFree : 0 }}",
+              "operation": "largerEqual",
+              "value2": "={{ $node[\"Parsear Comprobar2\"].json.pax }}"
+            }
+          ]
+        }
+      },
+      "id": "aa8b3185-e8af-4cb6-a2b4-111e52634d8a",
+      "name": "Hay capacidad?2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        12192,
+        20768
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ $node[\"Parsear Comprobar2\"].json.toolCallId ? { results: [ { toolCallId: $node[\"Parsear Comprobar2\"].json.toolCallId, result: \"Disponibilidad confirmada. Sí hay sitio disponible para esa hora.\" } ] } : { response: \"Disponibilidad confirmada. Sí hay sitio disponible para esa hora.\" } }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "2e15a635-15df-4aa2-81f5-271bf7984fe9",
+      "name": "Respuesta: Disponible2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12384,
+        20720
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ (function() { var shifts = $node[\"Comprobar Ocupación API2\"].json.shifts || []; var avail = $node[\"Comprobar Ocupación API2\"].json.availability || {}; var alts = shifts.filter(function(s) { return avail[s.time] && avail[s.time].totalFree > 0; }).map(function(s) { return s.time; }); var msg = 'Esa hora está completa.'; if (alts.length > 0) msg += ' Turnos disponibles: ' + alts.join(', ') + '. ¿Te viene bien alguno?'; else msg += ' No hay turnos con disponibilidad para ese día.'; return $node['Parsear Comprobar2'].json.toolCallId ? { results: [{ toolCallId: $node['Parsear Comprobar2'].json.toolCallId, result: msg }] } : { response: msg }; })() }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "4afe0e55-0d39-4598-9946-bb5585812489",
+      "name": "Respuesta: Lleno2",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12400,
+        20896
+      ]
+    },
+    {
+      "parameters": {
+        "respondWith": "json",
+        "responseBody": "={{ (function() { var shifts = $json.shifts || []; var avail = $json.availability || {}; var alts = shifts.filter(function(s) { return avail[s.time] && avail[s.time].totalFree > 0; }).map(function(s) { return s.time; }); var requested = $json.requestedTime || ''; var msg = 'No existe turno a las ' + requested + '.'; if (alts.length > 0) msg += ' Los turnos disponibles son: ' + alts.join(', ') + '. ¿Cuál prefieres?'; else msg += ' No hay turnos con disponibilidad para ese día.'; return $node['Parsear Comprobar2'].json.toolCallId ? { results: [{ toolCallId: $node['Parsear Comprobar2'].json.toolCallId, result: msg }] } : { response: msg }; })() }}",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            ]
+          }
+        }
+      },
+      "id": "53d181d4-59bb-4e38-9850-4632e1d48ad0",
+      "name": "Respuesta: Turno No Existe1",
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1,
+      "position": [
+        12192,
+        20928
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook: guardar_reserva": {
+      "main": [
+        [
+          {
+            "node": "Parsear Guardar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Guardar": {
+      "main": [
+        [
+          {
+            "node": "Validar Turno API",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validar Turno API": {
+      "main": [
+        [
+          {
+            "node": "Es turno válido?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es turno válido?": {
+      "main": [
+        [
+          {
+            "node": "Insertar Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Turno Invalido",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Insertar Reserva": {
+      "main": [
+        [
+          {
+            "node": "Respuesta: Guardada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta: Guardada": {
+      "main": [
+        [
+          {
+            "node": "Notificación Push (Voz)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: buscar_reserva": {
+      "main": [
+        [
+          {
+            "node": "Parsear Buscar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Buscar": {
+      "main": [
+        [
+          {
+            "node": "Buscar Reserva",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Reserva": {
+      "main": [
+        [
+          {
+            "node": "Existe reserva?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Existe reserva?": {
+      "main": [
+        [
+          {
+            "node": "Respuesta: No Existe",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Encontrada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: cancelar_reserva": {
+      "main": [
+        [
+          {
+            "node": "Parsear Cancelar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Cancelar": {
+      "main": [
+        [
+          {
+            "node": "Cancelar en DB",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cancelar en DB": {
+      "main": [
+        [
+          {
+            "node": "Respuesta: Cancelada",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respuesta: Cancelada": {
+      "main": [
+        [
+          {
+            "node": "Notificación Push Cancelación (Voz)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook - Nueva Reserva": {
+      "main": [
+        [
+          {
+            "node": "Nueva vs mod/cancel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es cancelación?": {
+      "main": [
+        [
+          {
+            "node": "Email - Cancelación",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Nueva vs mod/cancel": {
+      "main": [
+        [
+          {
+            "node": "Email - Confirmación Inmediata",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Es cancelación?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Cada día a las 19:00": {
+      "main": [
+        [
+          {
+            "node": "Supabase - Obtener Reservas (Recordatorio)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Supabase - Obtener Reservas (Recordatorio)": {
+      "main": [
+        [
+          {
+            "node": "Filtrar: Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filtrar: Mañana": {
+      "main": [
+        [
+          {
+            "node": "Email - Recordatorio Mañana",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook: comprobar_disponibilidad2": {
+      "main": [
+        [
+          {
+            "node": "Parsear Comprobar2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parsear Comprobar2": {
+      "main": [
+        [
+          {
+            "node": "Comprobar Ocupación API2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Comprobar Ocupación API2": {
+      "main": [
+        [
+          {
+            "node": "Es turno exacto?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Es turno exacto?1": {
+      "main": [
+        [
+          {
+            "node": "Hay capacidad?2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Turno No Existe1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hay capacidad?2": {
+      "main": [
+        [
+          {
+            "node": "Respuesta: Disponible2",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Respuesta: Lleno2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}
