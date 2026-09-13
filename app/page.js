@@ -302,7 +302,7 @@ export default function ReservasPage() {
     return (
       <main className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="w-10 h-10 border-4 border-blue-200 border-t-blue-600 rounded-full spinner mx-auto mb-4"></div>
+          <div className="w-10 h-10 border-4 border-slate-300 border-t-[#3b526d] rounded-full spinner mx-auto mb-4"></div>
           <p className="text-slate-500 font-semibold">Cargando disponibilidad...</p>
         </div>
       </main>
@@ -324,7 +324,7 @@ export default function ReservasPage() {
       {/* Progress bar */}
       <div className="flex items-center justify-center gap-2 mb-8">
         {[1,2,3].map(s => (
-          <div key={s} className={`h-1.5 rounded-full transition-all duration-300 ${s <= step ? 'bg-blue-600 w-16' : 'bg-slate-200 w-8'}`}></div>
+          <div key={s} className={`h-1.5 rounded-full transition-all duration-300 ${s <= step ? 'bg-[#3b526d] w-16' : 'bg-slate-200 w-8'}`}></div>
         ))}
       </div>
 
@@ -408,10 +408,10 @@ export default function ReservasPage() {
                     onClick={() => !disabled && selectDate(ds)}
                     className={`cal-day aspect-square rounded-lg border text-sm font-bold flex items-center justify-center
                       ${isSelected ? 'cal-selected' : ''}
-                      ${isToday && !isSelected ? 'cal-today border-blue-400 text-blue-600' : 'border-transparent'}
+                      ${isToday && !isSelected ? 'cal-today border-[#3b526d] text-[#3b526d]' : 'border-transparent'}
                       ${closed ? 'cal-closed' : ''}
                       ${(isPast || isTooFar) && !closed ? 'cal-disabled' : ''}
-                      ${!disabled && !isSelected && !isToday ? 'text-slate-700 hover:bg-blue-50' : ''}
+                      ${!disabled && !isSelected && !isToday ? 'text-slate-700 hover:bg-[#e2e8f0]' : ''}
                     `}
                   >
                     {day}
@@ -439,11 +439,11 @@ export default function ReservasPage() {
             }
             return (
               <div className="flex flex-row gap-4 justify-center items-stretch mb-6 max-w-sm mx-auto">
-                 <button onClick={() => setUMeal('comida')} className="flex-1 px-2 py-8 rounded-2xl border-2 border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50 text-slate-700 font-bold text-lg flex flex-col items-center justify-center gap-3 transition-all shadow-sm">
+                 <button onClick={() => setUMeal('comida')} className="flex-1 px-2 py-8 rounded-2xl border-2 border-slate-200 bg-white hover:border-[#3b526d] hover:bg-[#e2e8f0] text-slate-700 font-bold text-lg flex flex-col items-center justify-center gap-3 transition-all shadow-sm">
                     <Sun className="w-10 h-10 text-orange-500" />
                     COMIDA
                  </button>
-                 <button onClick={() => setUMeal('cena')} className="flex-1 px-2 py-8 rounded-2xl border-2 border-slate-200 bg-white hover:border-blue-400 hover:bg-blue-50 text-slate-700 font-bold text-lg flex flex-col items-center justify-center gap-3 transition-all shadow-sm">
+                 <button onClick={() => setUMeal('cena')} className="flex-1 px-2 py-8 rounded-2xl border-2 border-slate-200 bg-white hover:border-[#3b526d] hover:bg-[#e2e8f0] text-slate-700 font-bold text-lg flex flex-col items-center justify-center gap-3 transition-all shadow-sm">
                     <CloudSun className="w-10 h-10 text-indigo-500" />
                     CENA
                  </button>
@@ -527,7 +527,7 @@ export default function ReservasPage() {
                       key={s.time}
                       onClick={() => selectTime(s.time, isFull)}
                       className={`slot-btn py-4 px-3 border-2 rounded-xl font-bold text-sm flex flex-col items-center gap-1
-                        ${!isFull && uTime === s.time ? 'border-blue-500 bg-blue-50 text-blue-600 selected' : ''}
+                        ${!isFull && uTime === s.time ? 'border-[#3b526d] bg-[#e2e8f0] text-[#3b526d] selected' : ''}
                         ${isFull && uWaitlistTimes.includes(s.time) ? 'border-orange-500 bg-orange-100 text-orange-800 ring-2 ring-orange-300' : ''}
                         ${isFull && !uWaitlistTimes.includes(s.time) ? 'border-orange-200 bg-orange-50 text-orange-700 hover:border-orange-400' : ''}
                         ${!isFull && uTime !== s.time ? 'border-slate-200 bg-white text-slate-700' : ''}
@@ -550,7 +550,7 @@ export default function ReservasPage() {
             <button
               disabled={!uDate || (!uTime && uWaitlistTimes.length === 0)}
               onClick={() => goToStep(2)}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
+              className="bg-[#3b526d] hover:bg-[#2a3c52] disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
             >
               Continuar <ArrowRight className="w-4 h-4" />
             </button>
@@ -566,7 +566,7 @@ export default function ReservasPage() {
           </button>
           <div className="text-center mb-8">
             <h2 className="text-3xl font-extrabold text-slate-800 mb-2">¿Cuántos seréis y dónde?</h2>
-            <p className="text-slate-500 font-medium">Reserva para el <span className="font-bold text-blue-600">{uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}</span> a las <span className="font-bold text-blue-600">{uWaitlist ? uWaitlistTimes.join(', ') : uTime}</span>. Máximo 10 online.</p>
+            <p className="text-slate-500 font-medium">Reserva para el <span className="font-bold text-[#3b526d]">{uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}</span> a las <span className="font-bold text-[#3b526d]">{uWaitlist ? uWaitlistTimes.join(', ') : uTime}</span>. Máximo 10 online.</p>
           </div>
 
           {/* Zone buttons with availability */}
@@ -582,8 +582,8 @@ export default function ReservasPage() {
                   key={zone}
                   onClick={() => { setUZone(zone); setUAdults(null); setUChildren(null); if (noCapacity) setUWaitlist(true); else setUWaitlist(false); }}
                   className={`flex-1 max-w-[180px] py-3 rounded-xl border-2 font-bold transition-all flex flex-col items-center gap-1
-                    ${isSelected ? (noCapacity ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-blue-500 bg-blue-50 text-blue-600') : ''}
-                    ${noCapacity && !isSelected ? 'border-orange-200 text-orange-600 bg-orange-50/50 hover:border-orange-400' : 'border-slate-200 text-slate-600 bg-white hover:border-blue-400'}
+                    ${isSelected ? (noCapacity ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-[#3b526d] bg-[#e2e8f0] text-[#3b526d]') : ''}
+                    ${noCapacity && !isSelected ? 'border-orange-200 text-orange-600 bg-orange-50/50 hover:border-orange-400' : 'border-slate-200 text-slate-600 bg-white hover:border-[#3b526d]'}
                   `}
                 >
                   {zone === 'interior' ? <Home className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -596,8 +596,8 @@ export default function ReservasPage() {
 
           {/* Terrace Info & Weather */}
           <div className="flex flex-col sm:flex-row gap-3 justify-center items-center mb-8 max-w-lg mx-auto">
-            <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-3 flex-1 flex items-start gap-2.5">
-              <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+            <div className="bg-[#e2e8f0]/50 border border-slate-200 rounded-xl p-3 flex-1 flex items-start gap-2.5">
+              <Info className="w-4 h-4 text-[#3b526d] mt-0.5 shrink-0" />
               <p className="text-[11px] text-slate-600 font-medium leading-relaxed text-left">
                 Nuestra terraza está <span className="font-bold text-slate-700">totalmente cubierta y aclimatada</span>, ofreciendo sombra en verano y resguardo si llueve.
               </p>
@@ -609,8 +609,8 @@ export default function ReservasPage() {
               rel="noopener noreferrer"
               className="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-3 flex items-center justify-center gap-2 transition-colors sm:max-w-[140px] w-full group"
             >
-              <CloudSun className="w-5 h-5 text-slate-500 group-hover:text-blue-500 transition-colors" />
-              <span className="text-[11px] font-bold text-slate-600 group-hover:text-blue-600">Ver el Tiempo</span>
+              <CloudSun className="w-5 h-5 text-slate-500 group-hover:text-[#3b526d] transition-colors" />
+              <span className="text-[11px] font-bold text-slate-600 group-hover:text-[#3b526d]">Ver el Tiempo</span>
             </a>
           </div>
 
@@ -632,7 +632,7 @@ export default function ReservasPage() {
                       onClick={() => { setUTotal(val); setUChildren(0); setUAdults(val); setShowChildrenInput(false); }}
                       className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded-2xl text-xl font-extrabold flex items-center justify-center transition-all pax-btn
                         ${uTotal === val ? (uWaitlist ? 'border-orange-500 text-orange-600 bg-orange-50' : 'selected') : ''}
-                        ${available && uTotal !== val ? 'border-slate-200 text-slate-700 bg-white hover:border-blue-400 hover:text-blue-500' : ''}
+                        ${available && uTotal !== val ? 'border-slate-200 text-slate-700 bg-white hover:border-[#3b526d] hover:text-[#3b526d]' : ''}
                         ${!available ? 'border-slate-100 text-slate-300 bg-slate-50 cursor-not-allowed' : ''}
                       `}
                     >
@@ -680,7 +680,7 @@ export default function ReservasPage() {
                               onClick={() => { setUChildren(val); setUAdults(uTotal - val); }}
                               className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded-2xl text-xl font-extrabold flex items-center justify-center transition-all pax-btn
                                 ${uChildren === val ? 'selected' : ''}
-                                border-slate-200 text-slate-700 bg-white hover:border-blue-400 hover:text-blue-500
+                                border-slate-200 text-slate-700 bg-white hover:border-[#3b526d] hover:text-[#3b526d]
                               `}
                             >
                               {val}
@@ -691,7 +691,7 @@ export default function ReservasPage() {
                     </>
                   )}
 
-                  <p className="text-center text-sm font-bold text-blue-600 mb-2">
+                  <p className="text-center text-sm font-bold text-[#3b526d] mb-2">
                     Total: {uTotal} ({uAdults} adulto{uAdults !== 1 ? 's' : ''}{uChildren > 0 ? ` + ${uChildren} niño${uChildren !== 1 ? 's' : ''}` : ''})
                   </p>
                 </>
@@ -703,7 +703,7 @@ export default function ReservasPage() {
             <button
               disabled={uTotal === null}
               onClick={() => goToStep(3)}
-              className="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
+              className="bg-[#3b526d] hover:bg-[#2a3c52] disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
             >
               Continuar a Datos <ArrowRight className="w-4 h-4" />
             </button>
@@ -730,7 +730,7 @@ export default function ReservasPage() {
           <div className="text-center mb-8">
             <h2 className="text-3xl font-extrabold text-slate-800 mb-2">Tus Datos</h2>
             <p className="text-slate-500 font-medium">
-              <span className="font-bold text-blue-600">{uTotal}</span> ({uAdults} adulto{uAdults !== 1 ? 's' : ''}{uChildren > 0 ? ` + ${uChildren} niño${uChildren !== 1 ? 's' : ''}` : ''}) · {uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })} a las <span className="font-bold text-blue-600">{uWaitlist ? uWaitlistTimes.join(', ') : uTime}</span> · {uZone === 'interior' ? 'Interior' : 'Terraza'}
+              <span className="font-bold text-[#3b526d]">{uTotal}</span> ({uAdults} adulto{uAdults !== 1 ? 's' : ''}{uChildren > 0 ? ` + ${uChildren} niño${uChildren !== 1 ? 's' : ''}` : ''}) · {uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })} a las <span className="font-bold text-[#3b526d]">{uWaitlist ? uWaitlistTimes.join(', ') : uTime}</span> · {uZone === 'interior' ? 'Interior' : 'Terraza'}
             </p>
           </div>
 
@@ -738,22 +738,22 @@ export default function ReservasPage() {
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre *</label>
               <input type="text" required value={formName} onChange={e => setFormName(e.target.value)}
-                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-blue-500 transition-colors" placeholder="Tu nombre" />
+                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-[#3b526d] transition-colors" placeholder="Tu nombre" />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Teléfono *</label>
               <input type="tel" required value={formPhone} onChange={e => setFormPhone(e.target.value)}
-                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-blue-500 transition-colors" placeholder="612 345 678" />
+                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-[#3b526d] transition-colors" placeholder="612 345 678" />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Email</label>
               <input type="email" value={formEmail} onChange={e => setFormEmail(e.target.value)}
-                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-blue-500 transition-colors" placeholder="tu@email.com" />
+                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-[#3b526d] transition-colors" placeholder="tu@email.com" />
             </div>
             <div>
               <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Notas / Alergias</label>
               <input type="text" value={formNotes} onChange={e => setFormNotes(e.target.value)}
-                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-blue-500 transition-colors" placeholder="Alergias, silla de bebé..." />
+                className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-[#3b526d] transition-colors" placeholder="Alergias, silla de bebé..." />
             </div>
 
             {/* Términos y Privacidad */}
@@ -786,7 +786,7 @@ export default function ReservasPage() {
               </details>
               <div className="flex items-start gap-3 p-4 border-t border-slate-100 bg-slate-50/50">
                 <input type="checkbox" id="terms-check" checked={formAccepted} onChange={e => setFormAccepted(e.target.checked)}
-                  className="mt-1 w-5 h-5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0" />
+                  className="mt-1 w-5 h-5 rounded border-slate-300 text-[#3b526d] focus:ring-[#3b526d] cursor-pointer shrink-0" />
                 <label htmlFor="terms-check" className="text-[11px] text-slate-500 font-medium leading-relaxed cursor-pointer select-none">
                   He leído y acepto las <strong className="text-slate-700">condiciones de reserva</strong> y la <strong className="text-slate-700">política de privacidad</strong> según el Reglamento General de Protección de Datos (RGPD).
                 </label>
@@ -801,7 +801,7 @@ export default function ReservasPage() {
 
             <button type="submit" disabled={submitting || !formName || !formPhone || isExpired || !formAccepted}
               className={`w-full text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center justify-center gap-2
-                ${uWaitlist ? 'bg-orange-600 hover:bg-orange-700' : 'bg-blue-600 hover:bg-blue-700'}
+                ${uWaitlist ? 'bg-orange-600 hover:bg-orange-700' : 'bg-[#3b526d] hover:bg-[#2a3c52]'}
                 disabled:bg-slate-300 disabled:text-slate-500
               `}>
               {submitting ? (
@@ -865,10 +865,10 @@ export default function ReservasPage() {
               </p>
             </div>
             <input type="email" value={popupEmail} onChange={e => setPopupEmail(e.target.value)}
-              className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-blue-500 transition-colors mb-4" placeholder="tu@email.com" autoFocus />
+              className="w-full p-3 border-2 border-slate-200 rounded-xl font-medium text-slate-800 bg-white outline-none focus:border-[#3b526d] transition-colors mb-4" placeholder="tu@email.com" autoFocus />
             <button onClick={() => { setShowEmailPopup(false); doSubmit(popupEmail); }}
               disabled={submitting || !popupEmail}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:text-slate-500 text-white py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 mb-2">
+              className="w-full bg-[#3b526d] hover:bg-[#2a3c52] disabled:bg-slate-300 disabled:text-slate-500 text-white py-3 rounded-xl font-bold text-sm shadow-lg transition-all flex items-center justify-center gap-2 mb-2">
               Añadir email y continuar
             </button>
             <button onClick={() => { setShowEmailPopup(false); doSubmit(''); }}
@@ -887,5 +887,6 @@ export default function ReservasPage() {
     </main>
   );
 }
+
 
 

@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --font-nunito: 'Nunito', sans-serif;
+  --font-montserrat: 'Nunito', sans-serif;
 }
 
 body {
-  font-family: var(--font-nunito), sans-serif;
+  font-family: var(--font-montserrat), sans-serif;
 }
 
 /* Step transitions */
@@ -94,3 +94,4 @@ body {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
