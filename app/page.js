@@ -554,13 +554,15 @@ export default function ReservasPage() {
                   key={zone}
                   onClick={() => { if (noCapacity) return; setUZone(zone); setUAdults(null); setUChildren(null); }}
                   className={`flex-1 max-w-[180px] py-3 rounded-xl border-2 font-bold transition-all flex flex-col items-center gap-1
-                    ${isSelected ? (noCapacity ? 'border-slate-300 bg-slate-100 text-slate-400' : 'border-emerald-600 bg-[#e2e8f0] text-emerald-700') : ''}
-                    ${noCapacity && !isSelected ? 'border-slate-200 text-slate-400 bg-slate-50 hover:border-slate-300' : 'border-slate-200 text-slate-600 bg-white hover:border-emerald-600'}
+                    ${isSelected && noCapacity ? 'border-slate-300 bg-slate-100 text-slate-400' : ''}
+                    ${isSelected && !noCapacity ? 'border-emerald-600 bg-emerald-50 text-emerald-700 shadow-md ring-1 ring-emerald-600' : ''}
+                    ${!isSelected && noCapacity ? 'border-slate-200 text-slate-400 bg-slate-50 hover:border-slate-300 cursor-not-allowed' : ''}
+                    ${!isSelected && !noCapacity ? 'border-slate-200 text-slate-600 bg-white hover:border-emerald-600 shadow-sm' : ''}
                   `}
                 >
                   {zone === 'interior' ? <Home className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
                   {label}
-                  {noCapacity && <span className="text-[9px] font-bold opacity-80 uppercase">Lista Espera</span>}
+                  {noCapacity && <span className="text-[9px] font-bold opacity-80 uppercase text-slate-400">Completo</span>}
                 </button>
               );
             })}

@@ -32,9 +32,9 @@ body {
   border-color: #93c5fd;
 }
 .cal-day.cal-selected {
-  background: #2563eb !important;
+  background: #059669 !important;
   color: white !important;
-  border-color: #2563eb !important;
+  border-color: #059669 !important;
   font-weight: 800;
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   transform: scale(1.08);
@@ -65,9 +65,9 @@ body {
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1);
 }
 .slot-btn.selected {
-  border-color: #2563eb;
-  background: #dbeafe;
-  color: #1e40af;
+  border-color: #059669;
+  background: #ecfdf5;
+  color: #047857;
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
   transform: scale(1.05);
 }
@@ -79,9 +79,9 @@ body {
 
 /* Pax buttons */
 .pax-btn.selected {
-  border-color: #2563eb !important;
-  background: #dbeafe !important;
-  color: #1e40af !important;
+  border-color: #059669 !important;
+  background: #ecfdf5 !important;
+  color: #047857 !important;
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
   transform: scale(1.1);
 }
