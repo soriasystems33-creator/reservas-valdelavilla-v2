@@ -109,7 +109,8 @@ export async function POST(request) {
 export async function PUT(request) {
   try {
     const body = await request.json();
-    const { id, date, time, pax, adults, children, zone, clientName, phone, notes } = body;
+    const { id, date, time, pax, adults, children, zone, clientName: clientNameRaw, phone, notes, name } = body;
+    const clientName = clientNameRaw || name;
 
     if (!id) {
       return NextResponse.json({ error: 'Falta el ID de la reserva' }, { status: 400 });
