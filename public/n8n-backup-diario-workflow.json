@@ -44,7 +44,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT json_build_object(\n  'version', 1,\n  'timestamp', now(),\n  'app', 'GASTROMANAGER BACKUP TOTAL N8N',\n  'appointments', (SELECT COALESCE(jsonb_agg(to_jsonb(a)), '[]'::jsonb) FROM appointments a),\n  'settings', (SELECT COALESCE(data::jsonb, '{}'::jsonb) FROM settings WHERE id = 'main' LIMIT 1),\n  'tables', (SELECT COALESCE(jsonb_agg(to_jsonb(t)), '[]'::jsonb) FROM tables t),\n  'providers', (SELECT COALESCE(jsonb_agg(to_jsonb(p)), '[]'::jsonb) FROM providers p)\n) AS backup_json;"
+        "query": "SELECT json_build_object(\n  'version', 1,\n  'timestamp', now(),\n  'app', 'RESTAURANTE VALDELAVILLA BACKUP TOTAL N8N',\n  'appointments', (SELECT COALESCE(jsonb_agg(to_jsonb(a)), '[]'::jsonb) FROM appointments a),\n  'settings', (SELECT COALESCE(data::jsonb, '{}'::jsonb) FROM settings WHERE id = 'main' LIMIT 1),\n  'tables', (SELECT COALESCE(jsonb_agg(to_jsonb(t)), '[]'::jsonb) FROM tables t),\n  'providers', (SELECT COALESCE(jsonb_agg(to_jsonb(p)), '[]'::jsonb) FROM providers p)\n) AS backup_json;"
       },
       "id": "db-read-full-backup",
       "name": "2. Leer Base de Datos Completa (Turnos, Mesas, Reservas)",

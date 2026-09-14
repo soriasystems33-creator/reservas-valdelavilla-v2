@@ -298,7 +298,7 @@ export default function ReservasPage() {
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Online</span>
         </div>
         <h1 className="text-3xl font-light text-slate-800 tracking-[0.2em] uppercase mb-1">Reserva tu Mesa</h1>
-        <p className="text-slate-500 font-medium text-sm">GastroManager — Reservas Online</p>
+        <p className="text-slate-500 font-medium text-sm">Restaurante Valdelavilla — Reservas Online</p>
       </header>
 
       {/* Progress bar */}
@@ -518,8 +518,19 @@ export default function ReservasPage() {
             </div>
           )}
 
-          <div className="flex justify-center flex-col items-center gap-2">
-            }</span> a las <span className="font-bold text-emerald-700">{uTime}</span>. Máximo 10 online.</p>
+          <div className="flex justify-center mt-8 mb-8">
+            <button
+              disabled={!uDate || !uTime}
+              onClick={() => goToStep(2)}
+              className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
+            >
+              Siguiente Paso <ArrowRight className="w-5 h-5" />
+            </button>
+          </div>
+
+          <div className="flex justify-center flex-col items-center gap-2 text-center mb-8">
+            <h2 className="text-2xl font-light text-slate-800 mb-2 tracking-[0.15em] uppercase">¿Cuántos seréis y dónde?</h2>
+            <p className="text-slate-500 font-medium">Reserva para el <span className="font-bold text-emerald-700">{uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}</span> a las <span className="font-bold text-emerald-700">{uTime}</span>. Máximo 10 online.</p>
           </div>
 
           {/* Zone buttons with availability */}
@@ -720,7 +731,7 @@ export default function ReservasPage() {
                   </div>
                   <div>
                     <h4 className="font-bold text-slate-800 text-xs uppercase tracking-widest mb-2">3. Protección de Datos (RGPD)</h4>
-                    <p><strong>Responsable del tratamiento:</strong> GastroManager · CIF pendiente de verificación · Domicilio social en [Dirección del Restaurante].</p>
+                    <p><strong>Responsable del tratamiento:</strong> Restaurante Valdelavilla · CIF pendiente de verificación · Domicilio social en [Dirección del Restaurante].</p>
                     <p><strong>Finalidad del tratamiento:</strong> Gestionar las reservas solicitadas, enviar recordatorios de la cita, comunicar cambios o cancelaciones, y mantener un histórico de visitas para mejorar la experiencia del cliente.</p>
                     <p><strong>Base legítima:</strong> Ejecución de un contrato (la reserva) y consentimiento explícito del interesado.</p>
                     <p><strong>Destinatarios:</strong> Los datos no se cederán a terceros salvo obligación legal. Se utilizan servicios de alojamiento cloud (Vercel Inc., Google Cloud) con sede en EEUU, acogidos al Privacy Framework UE-EEUU.</p>
@@ -828,7 +839,7 @@ export default function ReservasPage() {
 
       {/* Footer */}
       <footer className="text-center mt-12 pb-8">
-        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">GastroManager · Reservas Online</p>
+        <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-widest">Restaurante Valdelavilla · Reservas Online</p>
       </footer>
     </main>
   );

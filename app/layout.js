@@ -8,7 +8,7 @@ const montserratFont = Montserrat({
 });
 
 export const metadata = {
-  title: 'GastroManager — Reservas Online',
+  title: 'Restaurante Valdelavilla — Reservas Online',
   description: 'Reserva tu mesa de manera rápida y fácil. Elige fecha, hora, zona y comensales.',
   keywords: 'reservas, restaurante, mesa, online',
 };

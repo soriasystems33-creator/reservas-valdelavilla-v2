@@ -40,7 +40,7 @@ function exportBackupJSON() {
         var backupData = {
             version: 1,
             timestamp: new Date().toISOString(),
-            app: "GASTROMANAGER BACKUP TOTAL",
+            app: "RESTAURANTE VALDELAVILLA BACKUP TOTAL",
             appointments: typeof g_appointments !== 'undefined' ? g_appointments : [],
             settings: typeof g_settings !== 'undefined' ? g_settings : {},
             tables: typeof g_tables !== 'undefined' ? g_tables : [],
