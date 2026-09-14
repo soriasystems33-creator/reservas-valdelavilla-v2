@@ -524,11 +524,19 @@ export default function ReservasPage() {
               onClick={() => goToStep(2)}
               className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
             >
-              Siguiente Paso <ArrowRight className="w-5 h-5" />
+              Continuar <ArrowRight className="w-4 h-4" />
             </button>
           </div>
+        </section>
+      )}
 
-          <div className="flex justify-center flex-col items-center gap-2 text-center mb-8">
+      {/* ─── STEP 2: Zone & Pax ─── */}
+      {step === 2 && !isCancelMode && (
+        <section className="step-container">
+          <button onClick={() => goToStep(1)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800 font-bold text-sm">
+            <ArrowLeft className="w-4 h-4" /> Volver
+          </button>
+          <div className="text-center mb-8">
             <h2 className="text-2xl font-light text-slate-800 mb-2 tracking-[0.15em] uppercase">¿Cuántos seréis y dónde?</h2>
             <p className="text-slate-500 font-medium">Reserva para el <span className="font-bold text-emerald-700">{uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}</span> a las <span className="font-bold text-emerald-700">{uTime}</span>. Máximo 10 online.</p>
           </div>
