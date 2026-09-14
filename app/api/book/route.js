@@ -31,10 +31,10 @@ function todayStr() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { date, time, pax, adults, children, zone, clientName: clientNameRaw, phone, notes, email, name, waitlist, waitlistTimes } = body;
+    const { date, time, pax, adults, children, zone, clientName: clientNameRaw, phone, notes, email, name } = body;
     const clientName = clientNameRaw || name;
 
-    if (!date || (!time && !(waitlist && waitlistTimes?.length > 0)) || !pax || !zone || !clientName || !phone || !email) {
+    if (!date || !time || !pax || !zone || !clientName || !phone || !email) {
       return NextResponse.json({ error: 'Faltan campos obligatorios' }, { status: 400 });
     }
 
@@ -52,7 +52,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Ya pasó la hora límite para reservar hoy.' }, { status: 403 });
     }
 
-    const timesToBook = waitlist && Array.isArray(waitlistTimes) && waitlistTimes.length > 0 ? waitlistTimes : [time];
+    const timesToBook = [time];
     const docRefs = [];
 
     for (const t of timesToBook) {
@@ -68,7 +68,7 @@ export async function POST(request) {
         phone,
         notes: notes || '',
         email,
-        status: waitlist ? 'waiting' : 'confirmed',
+        status: 'confirmed',
         source: 'web',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
@@ -98,7 +98,7 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       id: docRefs[0],
-      message: waitlist ? 'Añadido a lista de espera' : 'Reserva creada correctamente',
+      message: 'Reserva creada correctamente',
     });
   } catch (error) {
     console.error('Error creating reservation:', error);
@@ -232,32 +232,7 @@ export async function DELETE(request) {
       }
     }
 
-    // Comprobar Lista de Espera al cancelar desde la web
-    const waitlistWebhookUrl = process.env.WAITLIST_WEBHOOK_URL;
-    if (waitlistWebhookUrl) {
-      try {
-        const snapshot = await db.collection('appointments').where('date', '==', resDate).get();
-        const waitingList = snapshot.docs.map(d => d.data()).filter(d => d.time === existingData.time && d.status === 'waiting');
-        if (waitingList.length > 0) {
-          const emailsToNotify = [...new Set(waitingList.filter(a => a.email).map(a => a.email))];
-          if (emailsToNotify.length > 0) {
-            await fetch(waitlistWebhookUrl, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                event: 'waitlist_freed',
-                date: resDate,
-                time: existingData.time,
-                freedSpots: existingData.pax,
-                emails: emailsToNotify
-              })
-            });
-          }
-        }
-      } catch (waitlistErr) {
-        console.error('Error trigger waitlist on web cancel:', waitlistErr);
-      }
-    }
+    
 
     return NextResponse.json({ success: true, message: 'Reserva cancelada' });
   } catch (error) {

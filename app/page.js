@@ -20,8 +20,7 @@ export default function ReservasPage() {
   const [uAdults, setUAdults] = useState(null);
   const [uChildren, setUChildren] = useState(null);
   const [showChildrenInput, setShowChildrenInput] = useState(false);
-  const [uWaitlist, setUWaitlist] = useState(false);
-  const [uWaitlistTimes, setUWaitlistTimes] = useState([]);
+
 
   // Availability data
   const [slots, setSlots] = useState([]);
@@ -178,8 +177,7 @@ export default function ReservasPage() {
     if (isDayClosed(dateStr)) return;
     setUDate(dateStr);
     setUTime(null);
-    setUWaitlist(false);
-    setUWaitlistTimes([]);
+
     // Fetch availability for that date
     fetch(`/api/availability?date=${dateStr}`)
       .then(r => r.json())
@@ -190,28 +188,10 @@ export default function ReservasPage() {
       });
   };
 
-  const selectTime = (time, isWaitlistTime) => {
-    if (isWaitlistTime) {
-      if (!uWaitlist) {
-        // Switching to waitlist mode
-        setUWaitlist(true);
-        setUTime(null);
-        setUWaitlistTimes([time]);
-      } else {
-        // Toggle the time in waitlist mode
-        if (uWaitlistTimes.includes(time)) {
-          setUWaitlistTimes(uWaitlistTimes.filter(t => t !== time));
-        } else {
-          setUWaitlistTimes([...uWaitlistTimes, time]);
-        }
-      }
-      setUMeal(parseInt(time.split(':')[0], 10) >= 17 ? 'cena' : 'comida');
-    } else {
-      setUWaitlist(false);
-      setUWaitlistTimes([]);
-      setUTime(time);
-      setUMeal(parseInt(time.split(':')[0], 10) >= 17 ? 'cena' : 'comida');
-    }
+  const selectTime = (time, isFull) => {
+    if (isFull) return;
+    setUTime(time);
+    setUMeal(parseInt(time.split(':')[0], 10) >= 17 ? 'cena' : 'comida');
   };
 
   // ── Step navigation ──
@@ -243,21 +223,21 @@ export default function ReservasPage() {
     setSubmitting(true);
     try {
       // Format times array if waitlist
-      const timeToSend = uWaitlist ? uWaitlistTimes.join(', ') : uTime;
+      const timeToSend = uTime;
 
       const res = await fetch('/api/book', {
         method: editId ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editId,
-          name: formName, date: uDate, time: timeToSend, waitlistTimes: uWaitlist ? uWaitlistTimes : undefined,
+          name: formName, date: uDate, time: timeToSend,
           pax: uAdults + uChildren, adults: uAdults, children: uChildren, zone: uZone, meal: uMeal,
-          phone: formPhone, email: finalEmail, notes: formNotes, waitlist: uWaitlist
+          phone: formPhone, email: finalEmail, notes: formNotes
         }),
       });
       const data = await res.json();
       if (data.success) {
-        setBookingResult({ success: true, message: editId ? 'Reserva actualizada correctamente' : (uWaitlist ? 'Apuntado a la lista de espera' : 'Reserva confirmada') });
+        setBookingResult({ success: true, message: editId ? 'Reserva actualizada correctamente' : 'Reserva confirmada' });
         setStep(4);
       } else {
         setBookingResult({ error: data.error || 'Error al procesar la reserva' });
@@ -508,8 +488,8 @@ export default function ReservasPage() {
                   return (
                     <div className="col-span-full text-center py-8 px-4">
                       <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 max-w-sm mx-auto">
-                        <p className="text-orange-800 font-extrabold text-lg mb-2">Reservas cerradas</p>
-                        <p className="text-orange-700 text-sm font-medium mb-4">No hay disponibilidad online para este turno. Si necesitas ayuda, llámanos.</p>
+                        <p className="text-orange-800 font-extrabold text-lg mb-2">Cerrado</p>
+                        <p className="text-orange-700 text-sm font-medium mb-4">Hoy no hay turno de {uMeal}.</p>
                         <a href="tel:000000000" className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                           <Phone className="w-4 h-4" /> Llamar al restaurante
                         </a>
@@ -525,16 +505,11 @@ export default function ReservasPage() {
                   return (
                     <button
                       key={s.time}
-                      onClick={() => selectTime(s.time, isFull)}
-                      className={`slot-btn py-4 px-3 border-2 rounded-xl font-bold text-sm flex flex-col items-center gap-1
-                        ${!isFull && uTime === s.time ? 'border-emerald-600 bg-[#e2e8f0] text-emerald-700 selected' : ''}
-                        ${isFull && uWaitlistTimes.includes(s.time) ? 'border-orange-500 bg-orange-100 text-orange-800 ring-2 ring-orange-300' : ''}
-                        ${isFull && !uWaitlistTimes.includes(s.time) ? 'border-orange-200 bg-orange-50 text-orange-700 hover:border-orange-400' : ''}
-                        ${!isFull && uTime !== s.time ? 'border-slate-200 bg-white text-slate-700' : ''}
-                      `}
+                      onClick={() => selectTime(s.time, isFull)} disabled={isFull}
+                      className={`slot-btn py-4 px-3 border-2 rounded-xl font-bold text-sm flex flex-col items-center gap-1 transition-all ${isFull ? 'border-slate-200 bg-slate-50 text-slate-400 cursor-not-allowed' : (!isFull && uTime === s.time ? 'border-emerald-600 bg-emerald-50 text-emerald-700 selected shadow-sm' : 'border-slate-200 bg-white text-slate-700 hover:border-emerald-600')}`}
                     >
                       <span className="font-mono text-lg">{s.time}</span>
-                      {isFull && <span className="text-[9px] font-extrabold uppercase tracking-widest text-orange-600">Lista Espera</span>}
+                      {isFull && <span className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Completo</span>}
                     </button>
                   );
                 });
@@ -544,29 +519,7 @@ export default function ReservasPage() {
           )}
 
           <div className="flex justify-center flex-col items-center gap-2">
-            {uWaitlist && uWaitlistTimes.length > 0 && (
-               <p className="text-orange-700 font-bold text-sm bg-orange-50 px-4 py-2 rounded-lg mb-2">Puedes seleccionar varios turnos para la lista de espera</p>
-            )}
-            <button
-              disabled={!uDate || (!uTime && uWaitlistTimes.length === 0)}
-              onClick={() => goToStep(2)}
-              className="bg-emerald-600 hover:bg-emerald-700 disabled:bg-slate-300 disabled:text-slate-500 text-white px-10 py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center gap-2"
-            >
-              Continuar <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        </section>
-      )}
-
-      {/* ═══ STEP 2: Zone & Pax ═══ */}
-      {step === 2 && !isCancelMode && (
-        <section className="step-container">
-          <button onClick={() => goToStep(1)} className="mb-6 flex items-center gap-2 text-slate-500 hover:text-slate-800 font-bold text-sm">
-            <ArrowLeft className="w-4 h-4" /> Volver
-          </button>
-          <div className="text-center mb-8">
-            <h2 className="text-2xl font-light text-slate-800 mb-2 tracking-[0.15em] uppercase">¿Cuántos seréis y dónde?</h2>
-            <p className="text-slate-500 font-medium">Reserva para el <span className="font-bold text-emerald-700">{uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })}</span> a las <span className="font-bold text-emerald-700">{uWaitlist ? uWaitlistTimes.join(', ') : uTime}</span>. Máximo 10 online.</p>
+            }</span> a las <span className="font-bold text-emerald-700">{uTime}</span>. Máximo 10 online.</p>
           </div>
 
           {/* Zone buttons with availability */}
@@ -580,7 +533,7 @@ export default function ReservasPage() {
               return (
                 <button
                   key={zone}
-                  onClick={() => { setUZone(zone); setUAdults(null); setUChildren(null); if (noCapacity) setUWaitlist(true); else setUWaitlist(false); }}
+                  onClick={() => { if (noCapacity) return; setUZone(zone); setUAdults(null); setUChildren(null); }}
                   className={`flex-1 max-w-[180px] py-3 rounded-xl border-2 font-bold transition-all flex flex-col items-center gap-1
                     ${isSelected ? (noCapacity ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-emerald-600 bg-[#e2e8f0] text-emerald-700') : ''}
                     ${noCapacity && !isSelected ? 'border-orange-200 text-orange-600 bg-orange-50/50 hover:border-orange-400' : 'border-slate-200 text-slate-600 bg-white hover:border-emerald-600'}
@@ -624,14 +577,14 @@ export default function ReservasPage() {
                 {Array.from({ length: MAX_PAX_ONLINE }).map((_, i) => {
                   const val = i + 1;
                   const maxAvail = Math.min(MAX_PAX_ONLINE, maxPaxForZone());
-                  const available = uWaitlist ? true : (val <= maxAvail);
+                  const available = val <= maxAvail;
                   return (
                     <button
                       key={val}
                       disabled={!available}
                       onClick={() => { setUTotal(val); setUChildren(0); setUAdults(val); setShowChildrenInput(false); }}
                       className={`w-14 h-14 md:w-16 md:h-16 border-2 rounded-2xl text-xl font-extrabold flex items-center justify-center transition-all pax-btn
-                        ${uTotal === val ? (uWaitlist ? 'border-orange-500 text-orange-600 bg-orange-50' : 'selected') : ''}
+                        ${uTotal === val ? 'selected' : ''}
                         ${available && uTotal !== val ? 'border-slate-200 text-slate-700 bg-white hover:border-emerald-600 hover:text-emerald-700' : ''}
                         ${!available ? 'border-slate-100 text-slate-300 bg-slate-50 cursor-not-allowed' : ''}
                       `}
@@ -718,19 +671,12 @@ export default function ReservasPage() {
             <ArrowLeft className="w-4 h-4" /> Volver
           </button>
           
-          {uWaitlist && (
-            <div className="mb-6 bg-orange-100 border-2 border-orange-300 rounded-2xl p-4 text-center max-w-md mx-auto">
-              <p className="text-orange-800 font-extrabold text-sm mb-1">⚠️ Estás en Lista de Espera</p>
-              <p className="text-orange-700 text-xs font-medium leading-relaxed">
-                El turno está completo. Si se libera una mesa, te enviaremos un correo electrónico a todos los apuntados. <strong>El hueco será para el primero que confirme.</strong>
-              </p>
-            </div>
-          )}
+          
 
           <div className="text-center mb-8">
             <h2 className="text-2xl font-light text-slate-800 mb-2 tracking-[0.15em] uppercase">Tus Datos</h2>
             <p className="text-slate-500 font-medium">
-              <span className="font-bold text-emerald-700">{uTotal}</span> ({uAdults} adulto{uAdults !== 1 ? 's' : ''}{uChildren > 0 ? ` + ${uChildren} niño${uChildren !== 1 ? 's' : ''}` : ''}) · {uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })} a las <span className="font-bold text-emerald-700">{uWaitlist ? uWaitlistTimes.join(', ') : uTime}</span> · {uZone === 'interior' ? 'Interior' : 'Terraza'}
+              <span className="font-bold text-emerald-700">{uTotal}</span> ({uAdults} adulto{uAdults !== 1 ? 's' : ''}{uChildren > 0 ? ` + ${uChildren} niño${uChildren !== 1 ? 's' : ''}` : ''}) · {uDate && new Date(uDate).toLocaleDateString('es-ES', { weekday: 'short', day: 'numeric', month: 'short' })} a las <span className="font-bold text-emerald-700">{uTime}</span> · {uZone === 'interior' ? 'Interior' : 'Terraza'}
             </p>
           </div>
 
@@ -801,7 +747,7 @@ export default function ReservasPage() {
 
             <button type="submit" disabled={submitting || !formName || !formPhone || isExpired || !formAccepted}
               className={`w-full text-white py-4 rounded-2xl font-bold uppercase tracking-widest text-sm shadow-lg transition-all flex items-center justify-center gap-2
-                ${uWaitlist ? 'bg-orange-600 hover:bg-orange-700' : 'bg-emerald-600 hover:bg-emerald-700'}
+                bg-emerald-600 hover:bg-emerald-700
                 disabled:bg-slate-300 disabled:text-slate-500
               `}>
               {submitting ? (
@@ -812,7 +758,7 @@ export default function ReservasPage() {
               ) : (
                 <>
                   <Check className="w-5 h-5" />
-                  {editId ? 'Guardar Cambios' : (uWaitlist ? 'Apuntarme a la lista' : 'Confirmar Reserva')}
+                  {editId ? 'Guardar Cambios' : 'Confirmar Reserva'}
                 </>
               )}
             </button>
