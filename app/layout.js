@@ -16,7 +16,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="es">
-      <body className={`${montserratFont.variable} font-sans bg-[#f8fafc] text-[#1e293b] antialiased`}>
+      <body className={`${montserratFont.variable} font-sans bg-green-50 text-[#1e293b] antialiased`}>
         {children}
       </body>
     </html>
