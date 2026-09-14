@@ -407,10 +407,10 @@ export default function ReservasPage() {
             if (allFull) {
               return (
                 <div className="text-center py-8 px-4 mb-6">
-                  <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 max-w-sm mx-auto">
-                    <p className="text-orange-800 font-extrabold text-lg mb-2">Completo</p>
-                    <p className="text-orange-700 text-sm font-medium mb-4">No disponible para este día. Si necesitas ayuda, llámanos.</p>
-                    <a href="tel:000000000" className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+                  <div className="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-6 max-w-sm mx-auto">
+                    <p className="text-slate-800 font-bold text-lg mb-2">Completo</p>
+                    <p className="text-slate-500 text-sm font-medium mb-4">No disponible para este día. Si necesitas ayuda, llámanos.</p>
+                    <a href="tel:000000000" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                       <Phone className="w-4 h-4" /> Llamar al restaurante
                     </a>
                   </div>
@@ -459,12 +459,12 @@ export default function ReservasPage() {
                 if ((uMeal === 'comida' && isPastLunchCutoff) || (uMeal === 'cena' && isPastDinnerCutoff)) {
                   return (
                     <div className="col-span-full text-center py-8 px-4">
-                      <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 max-w-sm mx-auto">
-                        <p className="text-orange-800 font-extrabold text-lg mb-2">Reservas cerradas para hoy</p>
-                        <p className="text-orange-700 text-sm font-medium mb-4">
+                      <div className="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-6 max-w-sm mx-auto">
+                        <p className="text-slate-800 font-bold text-lg mb-2">Reservas cerradas para hoy</p>
+                        <p className="text-slate-500 text-sm font-medium mb-4">
                           La hora límite para reservar {uMeal === 'comida' ? 'comida' : 'cena'} de hoy ({uMeal === 'comida' ? '12:30' : '20:00'}) ya ha pasado. Para reservar, llámanos.
                         </p>
-                        <a href="tel:000000000" className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+                        <a href="tel:000000000" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                           <Phone className="w-4 h-4" /> Llamar al restaurante
                         </a>
                       </div>
@@ -487,10 +487,10 @@ export default function ReservasPage() {
                 if (filteredSlots.length === 0) {
                   return (
                     <div className="col-span-full text-center py-8 px-4">
-                      <div className="bg-orange-50 border-2 border-orange-200 rounded-2xl p-6 max-w-sm mx-auto">
-                        <p className="text-orange-800 font-extrabold text-lg mb-2">Cerrado</p>
-                        <p className="text-orange-700 text-sm font-medium mb-4">Hoy no hay turno de {uMeal}.</p>
-                        <a href="tel:000000000" className="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+                      <div className="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-6 max-w-sm mx-auto">
+                        <p className="text-slate-800 font-bold text-lg mb-2">Cerrado</p>
+                        <p className="text-slate-500 text-sm font-medium mb-4">Hoy no hay turno de {uMeal}.</p>
+                        <a href="tel:000000000" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                           <Phone className="w-4 h-4" /> Llamar al restaurante
                         </a>
                       </div>
@@ -546,8 +546,8 @@ export default function ReservasPage() {
                   key={zone}
                   onClick={() => { if (noCapacity) return; setUZone(zone); setUAdults(null); setUChildren(null); }}
                   className={`flex-1 max-w-[180px] py-3 rounded-xl border-2 font-bold transition-all flex flex-col items-center gap-1
-                    ${isSelected ? (noCapacity ? 'border-orange-500 bg-orange-50 text-orange-600' : 'border-emerald-600 bg-[#e2e8f0] text-emerald-700') : ''}
-                    ${noCapacity && !isSelected ? 'border-orange-200 text-orange-600 bg-orange-50/50 hover:border-orange-400' : 'border-slate-200 text-slate-600 bg-white hover:border-emerald-600'}
+                    ${isSelected ? (noCapacity ? 'border-slate-300 bg-slate-100 text-slate-400' : 'border-emerald-600 bg-[#e2e8f0] text-emerald-700') : ''}
+                    ${noCapacity && !isSelected ? 'border-slate-200 text-slate-400 bg-slate-50 hover:border-slate-300' : 'border-slate-200 text-slate-600 bg-white hover:border-emerald-600'}
                   `}
                 >
                   {zone === 'interior' ? <Home className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
@@ -606,7 +606,7 @@ export default function ReservasPage() {
                 })}
                 <button
                   onClick={() => window.location.href = 'tel:000000000'}
-                  className="px-6 h-14 md:h-16 border-2 border-orange-200 rounded-2xl text-sm font-extrabold text-orange-600 bg-orange-50 flex items-center justify-center transition-all hover:border-orange-400"
+                  className="px-6 h-14 md:h-16 border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-500 bg-white shadow-sm flex items-center justify-center transition-all hover:border-slate-300"
                 >
                   +10 <Phone className="w-4 h-4 ml-2" />
                 </button>
