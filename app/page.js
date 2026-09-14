@@ -314,7 +314,7 @@ export default function ReservasPage() {
           <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-8 max-w-sm mx-auto">
             <p className="text-red-800 font-extrabold text-lg mb-2">No es posible cancelar online</p>
             <p className="text-red-700 text-sm font-medium mb-4">{bookingResult.error}</p>
-            <a href="tel:000000000" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+            <a href="tel:+34678525693" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
               <Phone className="w-4 h-4" /> Llamar al restaurante
             </a>
           </div>
@@ -410,7 +410,7 @@ export default function ReservasPage() {
                   <div className="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-6 max-w-sm mx-auto">
                     <p className="text-slate-800 font-bold text-lg mb-2">Completo</p>
                     <p className="text-slate-500 text-sm font-medium mb-4">No disponible para este día. Si necesitas ayuda, llámanos.</p>
-                    <a href="tel:000000000" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+                    <a href="tel:+34678525693" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                       <Phone className="w-4 h-4" /> Llamar al restaurante
                     </a>
                   </div>
@@ -464,7 +464,7 @@ export default function ReservasPage() {
                         <p className="text-slate-500 text-sm font-medium mb-4">
                           La hora límite para reservar {uMeal === 'comida' ? 'comida' : 'cena'} de hoy ({uMeal === 'comida' ? '12:30' : '20:00'}) ya ha pasado. Para reservar, llámanos.
                         </p>
-                        <a href="tel:000000000" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+                        <a href="tel:+34678525693" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                           <Phone className="w-4 h-4" /> Llamar al restaurante
                         </a>
                       </div>
@@ -490,7 +490,7 @@ export default function ReservasPage() {
                       <div className="bg-white border-2 border-slate-200 shadow-sm rounded-2xl p-6 max-w-sm mx-auto">
                         <p className="text-slate-800 font-bold text-lg mb-2">Cerrado</p>
                         <p className="text-slate-500 text-sm font-medium mb-4">Hoy no hay turno de {uMeal}.</p>
-                        <a href="tel:000000000" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
+                        <a href="tel:+34678525693" className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg transition-colors">
                           <Phone className="w-4 h-4" /> Llamar al restaurante
                         </a>
                       </div>
@@ -578,7 +578,7 @@ export default function ReservasPage() {
             </div>
             
             <a 
-              href="YOUR_WEATHER_URL" 
+              href="https://www.google.com/search?q=el+tiempo+en+valdelavilla+soria" 
               target="_blank" 
               rel="noopener noreferrer"
               className="bg-slate-50 hover:bg-white border border-slate-200 rounded-xl p-3 flex items-center justify-center gap-2 transition-colors sm:max-w-[140px] w-full group"
@@ -615,7 +615,7 @@ export default function ReservasPage() {
                   );
                 })}
                 <button
-                  onClick={() => window.location.href = 'tel:000000000'}
+                  onClick={() => window.location.href = 'tel:+34678525693'}
                   className="px-6 h-14 md:h-16 border-2 border-slate-200 rounded-2xl text-sm font-bold text-slate-500 bg-white shadow-sm flex items-center justify-center transition-all hover:border-slate-300"
                 >
                   +10 <Phone className="w-4 h-4 ml-2" />
