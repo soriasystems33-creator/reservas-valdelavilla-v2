@@ -210,7 +210,6 @@ export async function DELETE(request) {
 
     await docRef.update({
       status: 'cancelled',
-      cancelledAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     });
 
