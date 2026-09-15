@@ -67,8 +67,8 @@
     {
       "parameters": {
         "sendTo": "={{ $json.email }}",
-        "subject": "🍽️ Recordatorio de Reserva para Mañana",
-        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡Mañana te esperamos, {{ $json.name }}!</h2>\n    <p>Te recordamos los detalles de tu mesa reservada para mañana:</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.pax }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar Reserva</a>\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Para garantizar el mejor servicio, te rogamos que en caso de no poder asistir nos avises con la mayor antelación posible. La mesa se guardará durante 15 minutos de cortesía tras la hora confirmada.<br><br>\n      📞 <strong>Teléfono de contacto:</strong> [Tu Teléfono]<br>\n      📍 <strong>Dirección:</strong> [Tu Dirección]\n    </div>\n  </div>\n  <div style=\"background-color: #0f172a; padding: 20px; text-align: center; font-size: 11px; color: #94a3b8;\">\n    Restaurante Valdelavilla · Gestión inteligente de reservas\n  </div>\n</div>",
+        "subject": "⏰ Recordatorio de Reserva para Mañana",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">RESTAURANTE VALDELAVILLA</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡Mañana te esperamos, {{ $json.name }}!</h2>\n    <p>Te recordíamos los detalles de tu mesa reservadía para mañana:</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.pax }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla.vercel.app/?id={{ $json.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar Reserva</a>\n      <a href=\"https://reservas-valdelavilla.vercel.app/?id={{ $json.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Para garantizar el mejor servicio, te rogamos que en caso de no poder asistir nos avises con la mayor antelación posible. La mesa se guardíará durante 15 minutos de cortesía tras la hora confirmadía.<br><br>\n      📞 <strong>Teléfono de contacto:</strong> [Tu Teléfono]<br>\n      📍 <strong>Dirección:</strong> [Tu Dirección]\n    </div>\n  </div>\n  <div style=\"background-color: #0f172a; padding: 20px; text-align: center; font-size: 11px; color: #94a3b8;\">\n    Restaurante Valdelavilla · Gestión inteligente de reservas\n  </div>\n</div>",
         "options": {
           "appendAttribution": false
         }
@@ -109,7 +109,7 @@
       "parameters": {
         "sendTo": "={{ $json.body.email }}",
         "subject": "✅ Reserva confirmada",
-        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡Reserva confirmada, {{ $json.body.clientName }}!</h2>\n    <p>Estamos encantados de recibirte pronto en nuestra mesa.</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.date }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : $json.body.pax + ' personas' }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.body.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar Reserva</a>\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/?id={{ $json.body.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Las reservas se mantendrán durante un máximo de 15 minutos de cortesía tras la hora confirmada. Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">RESTAURANTE VALDELAVILLA</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡✅ ✅ Reserva confirmadía, {{ $json.body.clientName }}!</h2>\n    <p>Estamos encantados de recibirte pronto en nuestra mesa.</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.díate }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : $json.body.pax + ' personas' }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla.vercel.app/?id={{ $json.body.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar ✅ Reserva</a>\n      <a href=\"https://reservas-valdelavilla.vercel.app/?id={{ $json.body.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar ✅ Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Las reservas se mantendrán durante un máximo de 15 minutos de cortesía tras la hora confirmadía. Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
         "options": {
           "appendAttribution": false
         }
@@ -154,7 +154,7 @@
       "parameters": {
         "sendTo": "={{ $json.body.email || $json.email }}",
         "subject": "❌ Reserva cancelada",
-        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">MI RESTAURANTE</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">Reserva cancelada, {{ $json.body.clientName || $json.clientName }}</h2>\n    <p>Hemos procesado la cancelación de tu reserva. Aquí están los detalles de la mesa liberada:</p>\n    <div style=\"background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.date || $json.date }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time || $json.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : ($json.body.pax || $json.pax) + ' personas' }}</p>\n    </div>\n    <p>Si deseas hacer una nueva reserva, puedes hacerlo a través de nuestra web.</p>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla-v1.vercel.app/\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 15px;\">Nueva Reserva</a>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">RESTAURANTE VALDELAVILLA</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">Reserva canceladía, {{ $json.body.clientName || $json.clientName }}</h2>\n    <p>Hemos procesado la cancelación de tu reserva. Aquííí están los detalles de la mesa liberadía:</p>\n    <div style=\"background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.díate || $json.díate }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time || $json.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : ($json.body.pax || $json.pax) + ' personas' }}</p>\n    </div>\n    <p>Si deseas hacer una nueva reserva, puedes hacerlo a través de nuestra web.</p>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla.vercel.app/\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 15px;\">Nueva Reserva</a>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
         "options": {
           "appendAttribution": false
         }
@@ -194,6 +194,31 @@
         -720,
         7232
       ]
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json.body.email }}",
+        "subject": "🔄 Reserva modificada",
+        "message": "=<div style=\"font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; color: #1e293b;\">\n  <div style=\"background-color: #0f172a; padding: 40px; text-align: center;\">\n    <h1 style=\"color: #f8fafc; margin: 0; letter-spacing: 4px; font-size: 24px; font-weight: 700;\">RESTAURANTE VALDELAVILLA</h1>\n  </div>\n  <div style=\"padding: 40px; background-color: #ffffff;\">\n    <h2 style=\"font-size: 20px; color: #0f172a;\">¡🔄 Reserva modificadía, {{ $json.body.clientName }}!</h2>\n    <p>Estamos encantados de recibirte pronto en nuestra mesa.</p>\n    <div style=\"background-color: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; margin: 20px 0;\">\n      <p style=\"margin: 5px 0;\"><strong>📅 Fecha:</strong> {{ $json.body.díate }}</p>\n      <p style=\"margin: 5px 0;\"><strong>🕐 Hora:</strong> {{ $json.body.time }}h</p>\n      <p style=\"margin: 5px 0;\"><strong>👥 Personas:</strong> {{ $json.body.adults ? $json.body.adults + ' adultos + ' + ($json.body.children || 0) + ' niños' : $json.body.pax + ' personas' }}</p>\n    </div>\n    <div style=\"margin: 20px 0; text-align: center;\">\n      <a href=\"https://reservas-valdelavilla.vercel.app/?id={{ $json.body.id }}\" style=\"background-color: #0f172a; color: #ffffff; padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Modificar Reserva</a>\n      <a href=\"https://reservas-valdelavilla.vercel.app/?id={{ $json.body.id }}&cancel=1\" style=\"background-color: #ffffff; color: #dc2626; border: 1px solid #dc2626; padding: 11px 19px; text-decoration: none; border-radius: 8px; font-weight: bold; display: inline-block; font-size: 13px; margin: 5px;\">Cancelar Reserva</a>\n      <p style=\"font-size: 10px; color: #64748b; margin-top: 8px;\">* Puedes modificar o cancelar online hasta la hora límite del mismo día.</p>\n    </div>\n    <div style=\"margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0; font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;\">\n      <strong>Nota importante:</strong> Las reservas se mantendrán durante un máximo de 15 minutos de cortesía tras la hora confirmadía. Agradecemos tu colaboración.\n    </div>\n  </div>\n</div>",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "id": "mod-nazmrb84m",
+      "name": "Email - Modificación",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        -240,
+        7200
+      ],
+      "webhookId": "2c1441d9-e8f7-4c67-87dc-98e651dfc0a6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "5lq4cJyk6O0KL9ea",
+          "name": "GMAIL RESTAURANTE"
+        }
+      }
     }
   ],
   "connections": {
@@ -201,14 +226,14 @@
       "main": [
         [
           {
-            "node": "Supabase - Obtener Reservas (Recordatorio)",
+            "node": "Email - Recordatorio Mañana",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Supabase - Obtener Reservas (Recordatorio)": {
+    "Email - Recordatorio Mañana": {
       "main": [
         [
           {
@@ -246,6 +271,13 @@
         [
           {
             "node": "Email - Cancelación",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Email - Modificación",
             "type": "main",
             "index": 0
           }

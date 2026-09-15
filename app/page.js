@@ -293,12 +293,17 @@ export default function ReservasPage() {
     <main className="min-h-screen py-6 px-4 max-w-2xl mx-auto">
       {/* Header */}
       <header className="text-center mb-8">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm"></div>
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Online</span>
+        <div className="flex items-center justify-center mb-4">
+          <img 
+            src="/logo-restaurante.jpg" 
+            alt="Restaurante Valdelavilla Logo" 
+            className="w-auto h-24 sm:h-28 object-contain rounded-2xl shadow-md border border-slate-100" 
+          />
         </div>
-        <h1 className="text-3xl font-light text-slate-800 tracking-[0.2em] uppercase mb-1">Reserva tu Mesa</h1>
-        <p className="text-slate-500 font-medium text-sm">Restaurante Valdelavilla — Reservas Online</p>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <div className="w-2.5 h-2.5 rounded-full bg-green-500 shadow-sm animate-pulse"></div>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reservas Online</span>
+        </div>
       </header>
 
       {/* Progress bar */}
